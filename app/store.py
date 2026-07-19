@@ -16,6 +16,8 @@ def _database_url() -> str:
         return "postgresql+psycopg://" + url.removeprefix("postgres://")
     if url.startswith("postgresql://"):
         return "postgresql+psycopg://" + url.removeprefix("postgresql://")
+    if os.environ.get("VERCEL") and url == "sqlite:///data/conversations.db":
+        return "sqlite:////tmp/conversations.db"
     return url
 
 
