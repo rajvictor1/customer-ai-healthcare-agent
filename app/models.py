@@ -1,6 +1,7 @@
-from pydantic import BaseModel
+from datetime import datetime, timezone
 from typing import Optional, List, Dict, Any, Literal
-from datetime import datetime
+from pydantic import BaseModel
+
 
 class Customer(BaseModel):
     id: str
@@ -9,6 +10,7 @@ class Customer(BaseModel):
     email: Optional[str] = None
     domain: Literal["healthcare"]
     authenticated: bool = False
+
 
 class Message(BaseModel):
     role: Literal["user", "bot", "agent", "system"]
@@ -19,6 +21,7 @@ class Message(BaseModel):
     confidence: Optional[float] = None
     escalated: bool = False
 
+
 class Conversation(BaseModel):
     id: str = ""
     customer_id: str
@@ -26,9 +29,10 @@ class Conversation(BaseModel):
     domain: Literal["healthcare"]
     messages: List[Message] = []
     context: Dict[str, Any] = {}
-    created_at: datetime = datetime.utcnow()
-    updated_at: datetime = datetime.utcnow()
+    created_at: datetime = datetime.now(timezone.utc)
+    updated_at: datetime = datetime.now(timezone.utc)
     status: Literal["active", "closed", "escalated"] = "active"
+
 
 class IncomingEvent(BaseModel):
     channel: Literal["web", "whatsapp", "phone", "email", "in_app"]

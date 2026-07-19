@@ -21,17 +21,13 @@ Both repos are already productionized with:
 
 ### Step 1 — Push the CI workflow
 
-The GitHub Actions workflow file `.github/workflows/ci.yml` exists locally but was not pushed due to OAuth scope limits. Run this first on each repo:
+The GitHub Actions workflow file `.github/workflows/ci.yml` exists locally and should be pushed:
 
 ```bash
-git clone https://github.com/rajvictor1/customer-ai-ecommerce-agent.git
-cd customer-ai-ecommerce-agent
 git add .github/workflows/ci.yml
 git commit -m "ci: add GitHub Actions workflow"
 git push origin main
 ```
-
-Then do the same for `customer-ai-healthcare-agent`.
 
 ### Step 2 — Add real environment variables
 
@@ -44,7 +40,7 @@ cp .env.example .env
 Required keys:
 
 ```text
-DATABASE_URL=sqlite:///data/conversations.db   # or postgresql://user:pass@host/db
+DATABASE_URL=sqlite:///data/conversations.db   # or postgresql://user:***@host/db
 SECRET_KEY=<generate a strong random key>
 OPENAI_API_KEY=<your OpenAI API key>
 OPENAI_MODEL=gpt-4o-mini
@@ -104,7 +100,10 @@ Run these checks:
 
 ```bash
 curl https://your-domain/api/health
-curl -X POST https://your-domain/api/chat   -H "Content-Type: application/json"   -d '{"message":"Where is my order","customer_id":"cust_456","channel":"web"}'
+
+curl -X POST https://your-domain/api/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message":"Book appointment with Dr. Sharma","customer_id":"cust_123","channel":"web"}'
 ```
 
 For WhatsApp, configure Twilio webhook URL to `https://your-domain/api/webhook/whatsapp`.

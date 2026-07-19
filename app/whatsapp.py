@@ -16,6 +16,7 @@ from app.logging import get_logger
 settings = get_settings()
 logger = get_logger(__name__)
 
+
 class WhatsAppAdapter:
     def __init__(self):
         self.client = None
@@ -45,5 +46,6 @@ class WhatsAppAdapter:
                 logger.error("whatsapp_reply_failed", to=to, error=str(e))
         else:
             logger.info("whatsapp_reply_stub", to=to, body=body)
+
 
 WHATSAPP = WhatsAppAdapter()

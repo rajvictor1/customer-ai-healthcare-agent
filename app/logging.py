@@ -18,8 +18,10 @@ structlog.configure(
     cache_logger_on_first_use=True,
 )
 
+
 def get_logger(name: str):
     return structlog.get_logger(name)
+
 
 # Also configure stdlib logging to avoid double output
 logging.basicConfig(

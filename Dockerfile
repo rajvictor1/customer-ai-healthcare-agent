@@ -10,7 +10,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Create data directory
-RUN mkdir -p data
+RUN mkdir -p /app/data
 
 # Expose port
 EXPOSE 8000

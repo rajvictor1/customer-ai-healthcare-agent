@@ -1,11 +1,10 @@
 import os
+from typing import Optional
 from fastapi import FastAPI, Request
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
-from typing import Optional
 from app.models import IncomingEvent
 from app.router import handle_event
 from app.store import STORE
@@ -18,14 +17,6 @@ logger = get_logger(__name__)
 app = FastAPI(title="Healthcare AI Agent MVP")
 templates = Jinja2Templates(directory="templates")
 
-if settings.cors_origin_list:
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=settings.cors_origin_list,
-        allow_credentials=True,
-        allow_methods=["GET", "POST"],
-        allow_headers=["Authorization", "Content-Type"],
-    )
 
 class ChatMessage(BaseModel):
     message: str
@@ -40,9 +31,11 @@ async def log_requests(request: Request, call_next):
     response = await call_next(request)
     return response
 
+
 @app.get("/", response_class=HTMLResponse)
 def index(request: Request):
     return templates.TemplateResponse(request, "chat.html")
+
 
 @app.get("/admin", response_class=HTMLResponse)
 def admin(request: Request):
@@ -55,6 +48,7 @@ def admin(request: Request):
         "healthcare_count": healthcare_count,
     })
 
+
 @app.post("/api/chat")
 async def chat(req: ChatMessage):
     logger.info("chat_request", customer_id=req.customer_id, channel=req.channel)
@@ -66,6 +60,7 @@ async def chat(req: ChatMessage):
         metadata={"conversation_id": req.conversation_id},
     )
     return await handle_event(event)
+
 
 @app.post("/api/webhook/whatsapp")
 async def whatsapp_webhook(request: Request):
@@ -81,16 +76,19 @@ async def whatsapp_webhook(request: Request):
     result = await handle_event(event)
     return {"reply": result["response"]}
 
+
 @app.get("/api/conversations/{conversation_id}")
 def get_conversation(conversation_id: str):
-    conv = STORE.get(conversation_id)
+    conv = STORE.db["conversations"].get(conversation_id)
     if not conv:
         return JSONResponse({"error": "not found"}, status_code=404)
-    return conv.model_dump(mode="json")
+    return dict(conv)
+
 
 @app.get("/api/health")
 def health():
     return {"status": "ok"}
+
 
 if os.path.isdir("static"):
     app.mount("/static", StaticFiles(directory="static"), name="static")

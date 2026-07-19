@@ -4,7 +4,7 @@ Self-contained FastAPI MVP for healthcare patient support: appointment booking, 
 
 Includes HIPAA-aware guardrails: no diagnosis, no lab interpretation, emergency escalation, and PIN step-up for sensitive intents.
 
-## Run
+## Run locally
 
 ```bash
 cd /Users/mac/customer-ai-healthcare-agent
@@ -16,6 +16,14 @@ uvicorn run:app --reload --port 8002
 
 Open `http://localhost:8002` for chat and `http://localhost:8002/admin` for the dashboard.
 
+Or use Docker:
+
+```bash
+docker-compose up --build
+```
+
+The app will be available at `http://localhost:8002`.
+
 ## Files
 
 - `app/main.py` — FastAPI routes + web UI.
@@ -26,8 +34,12 @@ Open `http://localhost:8002` for chat and `http://localhost:8002/admin` for the 
 - `app/backend_mock.py` — mock EHR, providers, appointments, billing.
 - `app/store.py` — SQLite persistence.
 - `app/models.py` — Pydantic models.
+- `app/auth.py` — OAuth2/OIDC stub.
+- `app/whatsapp.py` — Twilio WhatsApp adapter.
+- `app/config.py` — Pydantic settings.
+- `app/logging.py` — structured JSON logging.
 - `templates/` — Jinja2 chat + admin templates.
-- `requirements.txt` — dependencies.
+- `tests/` — pytest test suite.
 
 ## Supported intents
 
@@ -46,26 +58,28 @@ Open `http://localhost:8002` for chat and `http://localhost:8002/admin` for the 
 - Escalates emergency phrases (e.g., "heart attack") immediately.
 - Requires 4-digit PIN / patient ID for prescription refills and billing.
 
+## Configuration
+
+Copy `.env.example` to `.env` and fill in real values:
+
+```bash
+cp .env.example .env
+```
+
 ## Notes
 
 This is a local MVP. Production needs real NLU, patient portal SSO/MFA, EHR integration under BAA, HIPAA-compliant logging, and secure secrets management.
 
 ## Production Deployment
 
-1. Copy `.env.example` to `.env` and fill in real credentials.
-2. Run with Docker:
-   ```bash
-   docker-compose up --build
-   ```
-3. Or deploy to Render / Fly.io / AWS / GCP / Azure using guides in `deploy/`.
-4. Point Twilio WhatsApp webhook to `https://your-domain/api/webhook/whatsapp`.
+See `deploy/` for platform-specific guides (Render, Fly.io, AWS, GCP, Azure).
 
 ## Production Checklist
 
 - [ ] Replace stub auth in `app/auth.py` with real OAuth2/OIDC.
 - [ ] Add `OPENAI_API_KEY` or switch to your own fine-tuned model.
-- [ ] Connect `app/backend_mock.py` replacements to real OMS/EHR APIs.
+- [ ] Connect `app/backend_mock.py` replacements to real EHR/scheduling/billing/pharmacy APIs under BAA.
 - [ ] Use managed PostgreSQL instead of SQLite.
 - [ ] Set strong `SECRET_KEY` and store all secrets in a vault.
 - [ ] Enable HTTPS and configure CORS for known origins.
-- [ ] Review HIPAA BAA (healthcare) or PCI-DSS scope (e-commerce).
+- [ ] Review HIPAA BAA before enabling PHI integrations.

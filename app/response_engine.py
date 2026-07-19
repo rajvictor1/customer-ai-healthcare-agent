@@ -2,6 +2,7 @@ from typing import Dict, Any
 from app.models import Conversation
 from app.backend_mock import BACKEND
 
+
 class ResponseEngine:
     def generate(self, conversation: Conversation, intent: str, entities: Dict[str, Any]) -> str:
         user = BACKEND.get_customer(conversation.customer_id)
@@ -13,8 +14,7 @@ class ResponseEngine:
 
         if intent.startswith("HC_"):
             return self._healthcare(conversation, intent, entities, name)
-        else:
-            return self._fallback(conversation, name)
+        return self._fallback(conversation, name)
 
     def _healthcare(self, conv: Conversation, intent: str, entities: Dict[str, Any], name: str) -> str:
         if intent == "HC_APPOINTMENT":
@@ -31,5 +31,6 @@ class ResponseEngine:
 
     def _fallback(self, conv: Conversation, name: str) -> str:
         return f"Hi {name}, I'm your AI assistant. I can help with appointments, prescription refills, billing, and finding providers. What would you like to do?"
+
 
 ENGINE = ResponseEngine()

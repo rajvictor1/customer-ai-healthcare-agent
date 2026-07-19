@@ -1,8 +1,6 @@
 fastapi
 uvicorn[standard]
 sqlite-utils
-sqlalchemy
-psycopg[binary]
 python-multipart
 jinja2
 pydantic
@@ -11,9 +9,9 @@ openai
 httpx
 python-jose[cryptography]
 passlib[bcrypt]
-slowapi
 structlog
 twilio
 pytest
 pytest-asyncio
+httpx
 ruff
