@@ -2,7 +2,6 @@ import re
 import json
 import os
 from typing import Tuple, Optional
-from app.models import Customer, Message, Conversation, IncomingEvent
 
 # Lazy import OpenAI so the app starts without an API key
 try:
@@ -10,9 +9,6 @@ try:
 except ImportError:
     OpenAI = None
 
-import re
-from typing import Tuple, Optional
-from app.models import Customer, Message, Conversation, IncomingEvent
 
 INTENT_PATTERNS = {
     "HC_APPOINTMENT": [r"book appointment", r"schedule", r"see a doctor", r"follow.?up"],

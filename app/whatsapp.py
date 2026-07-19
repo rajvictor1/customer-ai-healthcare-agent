@@ -3,8 +3,7 @@
 Production: replace mock/stub calls with real Twilio SDK calls.
 """
 
-from fastapi import Request, Form
-from typing import Optional
+from fastapi import Request
 
 try:
     from twilio.rest import Client

@@ -1,6 +1,6 @@
 import re
 from typing import Tuple
-from app.models import Conversation, Message
+from app.models import Conversation
 
 class PolicyLayer:
     def apply(self, conversation: Conversation, user_text: str) -> Tuple[bool, str, str]:

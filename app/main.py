@@ -1,4 +1,6 @@
+import os
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -15,6 +17,15 @@ logger = get_logger(__name__)
 
 app = FastAPI(title="Healthcare AI Agent MVP")
 templates = Jinja2Templates(directory="templates")
+
+if settings.cors_origin_list:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.cors_origin_list,
+        allow_credentials=True,
+        allow_methods=["GET", "POST"],
+        allow_headers=["Authorization", "Content-Type"],
+    )
 
 class ChatMessage(BaseModel):
     message: str
@@ -81,6 +92,5 @@ def get_conversation(conversation_id: str):
 def health():
     return {"status": "ok"}
 
-import os
 if os.path.isdir("static"):
     app.mount("/static", StaticFiles(directory="static"), name="static")

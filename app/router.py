@@ -1,6 +1,5 @@
 from datetime import datetime
 from typing import Dict, Any
-from app.models import Conversation
 from app.policy import PolicyLayer
 from app.classifier import IntentClassifier
 from app.response_engine import ENGINE

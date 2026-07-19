@@ -3,7 +3,7 @@ import sqlite_utils
 import sqlite3
 import json
 from datetime import datetime, timedelta
-from typing import List, Optional, Dict, Any
+from typing import List, Dict, Any
 from app.models import Conversation, Message
 
 DB_PATH = os.environ.get("DATABASE_URL", "sqlite:///data/conversations.db").replace("sqlite:///", "")
