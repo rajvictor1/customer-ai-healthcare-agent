@@ -1,6 +1,8 @@
 fastapi
 uvicorn[standard]
 sqlite-utils
+sqlalchemy
+psycopg[binary]
 python-multipart
 jinja2
 pydantic

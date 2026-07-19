@@ -83,10 +83,10 @@ async def whatsapp_webhook(request: Request):
 
 @app.get("/api/conversations/{conversation_id}")
 def get_conversation(conversation_id: str):
-    conv = STORE.db["conversations"].get(conversation_id)
+    conv = STORE.get(conversation_id)
     if not conv:
         return JSONResponse({"error": "not found"}, status_code=404)
-    return dict(conv)
+    return conv.model_dump(mode="json")
 
 @app.get("/api/health")
 def health():
