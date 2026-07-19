@@ -1,3 +1,4 @@
+import os
 import sqlite_utils
 import sqlite3
 import json
@@ -5,9 +6,10 @@ from datetime import datetime, timedelta
 from typing import List, Optional, Dict, Any
 from app.models import Conversation, Message
 
-DB_PATH = "/tmp/customer_ai_healthcare_conversations.db"
+DB_PATH = os.environ.get("DATABASE_URL", "sqlite:///data/conversations.db").replace("sqlite:///", "")
 
 def init_db():
+    os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
     conn = sqlite3.connect(DB_PATH, check_same_thread=False)
     db = sqlite_utils.Database(conn)
     if "conversations" not in db.table_names():

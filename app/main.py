@@ -7,6 +7,11 @@ from typing import Optional
 from app.models import IncomingEvent
 from app.router import handle_event
 from app.store import STORE
+from app.config import get_settings
+from app.logging import get_logger
+
+settings = get_settings()
+logger = get_logger(__name__)
 
 app = FastAPI(title="Healthcare AI Agent MVP")
 templates = Jinja2Templates(directory="templates")
@@ -16,6 +21,13 @@ class ChatMessage(BaseModel):
     customer_id: str
     channel: str = "web"
     conversation_id: Optional[str] = None
+
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    logger.info("http_request", method=request.method, path=request.url.path)
+    response = await call_next(request)
+    return response
 
 @app.get("/", response_class=HTMLResponse)
 def index(request: Request):
@@ -34,6 +46,7 @@ def admin(request: Request):
 
 @app.post("/api/chat")
 async def chat(req: ChatMessage):
+    logger.info("chat_request", customer_id=req.customer_id, channel=req.channel)
     event = IncomingEvent(
         channel=req.channel,
         customer_id=req.customer_id,

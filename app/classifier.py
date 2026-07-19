@@ -1,4 +1,16 @@
 import re
+import json
+import os
+from typing import Tuple, Optional
+from app.models import Customer, Message, Conversation, IncomingEvent
+
+# Lazy import OpenAI so the app starts without an API key
+try:
+    from openai import OpenAI
+except ImportError:
+    OpenAI = None
+
+import re
 from typing import Tuple, Optional
 from app.models import Customer, Message, Conversation, IncomingEvent
 
@@ -35,6 +47,41 @@ class IntentClassifier:
                         best_score = score
                         best_intent = intent
         return best_intent, round(min(best_score, 0.98), 2)
+
+    def llm_classify(self, text: str) -> Tuple[str, float, dict]:
+        """Use OpenAI to classify intent and extract entities. Falls back to regex."""
+        if not OpenAI or not os.environ.get("OPENAI_API_KEY"):
+            return None, 0.0, {}
+
+        # Determine domain from available intent patterns
+        domain = "ecommerce" if any(k.startswith("EC_") for k in INTENT_PATTERNS) else "healthcare"
+        intent_examples = "\n".join([f"- {k}" for k in INTENT_PATTERNS.keys()])
+
+        prompt = f"""Classify the user message for a {domain} customer support AI agent.
+Return ONLY a JSON object with keys: intent, confidence (0.0-1.0), entities (object).
+
+Allowed intents:
+{intent_examples}
+
+Message: {text}
+"""
+        try:
+            client = OpenAI()
+            resp = client.chat.completions.create(
+                model=os.environ.get("OPENAI_MODEL", "gpt-4o-mini"),
+                messages=[{"role": "user", "content": prompt}],
+                response_format={"type": "json_object"},
+                temperature=0.0,
+            )
+            data = json.loads(resp.choices[0].message.content)
+            intent = data.get("intent", "UNKNOWN")
+            confidence = float(data.get("confidence", 0.0))
+            entities = data.get("entities", {})
+            if intent not in INTENT_PATTERNS and intent != "UNKNOWN":
+                intent = "UNKNOWN"
+            return intent, round(min(confidence, 0.99), 2), entities
+        except Exception:
+            return None, 0.0, {}
 
     def extract_entities(self, text: str) -> dict:
         entities = {}

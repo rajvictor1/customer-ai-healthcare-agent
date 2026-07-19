@@ -1,9 +1,26 @@
-venv/
+# Python
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
+*$py.class
+*.so
 .Python
-data/conversations.db
+venv/
+env/
 .env
+
+# Data
+data/
+*.db
+*.sqlite3
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
 .DS_Store
+Thumbs.db
+
+# Logs
+*.log

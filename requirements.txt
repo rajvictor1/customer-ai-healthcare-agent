@@ -3,3 +3,15 @@ uvicorn[standard]
 sqlite-utils
 python-multipart
 jinja2
+pydantic
+pydantic-settings
+openai
+httpx
+python-jose[cryptography]
+passlib[bcrypt]
+slowapi
+structlog
+twilio
+pytest
+pytest-asyncio
+ruff
